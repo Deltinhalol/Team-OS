@@ -23,8 +23,8 @@ Bot de Discord em Python (`discord.py` 2.x) para gerenciar um time de **MPS** (f
 ## Instalação
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-cd SEU_REPOSITORIO
+git clone https://github.com/Deltinhalol/Team-OS
+cd 
 pip install -r requirements.txt
 ```
 
