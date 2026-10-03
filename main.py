@@ -1,16 +1,4 @@
-# =============================================================================
-#  MPS TEAM MANAGER
-#  Bot de Discord para gerenciamento de time de MPS (futebol no Roblox).
-#  Arquivo único: tudo (banco, comandos, painéis, imagens) está neste main.py.
-# =============================================================================
 
-# O token NUNCA fica no código (este arquivo vai para o GitHub).
-# Defina a variável de ambiente DISCORD_TOKEN ou crie um arquivo `.env` ao lado
-# do main.py com a linha:  DISCORD_TOKEN=seu_token_aqui   (o .env é ignorado pelo git).
-
-# ==============================
-# IMPORTS
-# ==============================
 import asyncio
 import io
 import os
@@ -32,9 +20,7 @@ from discord import app_commands
 from discord.ext import tasks
 from PIL import Image, ImageDraw, ImageFont
 
-# ==============================
-# CONFIGURAÇÕES
-# ==============================
+
 
 
 
@@ -57,23 +43,22 @@ def _load_dotenv(names: tuple = (".env", "env.txt")) -> None:
 
 _load_dotenv()
 
-# Token do bot (vem do ambiente/.env, nunca do código).
+
 TOKEN = os.environ.get("DISCORD_TOKEN", "").strip()
 
-# Arquivo do banco SQLite (criado automaticamente na primeira execução).
+
 DB_PATH = os.environ.get("MPS_DB_PATH", "mps_team.db")
 
-# Opcional: ID de um servidor para os comandos aparecerem instantaneamente durante
-# os testes (variável MPS_TEST_GUILD_ID). Vazio = registro global.
+
 GUILD_DE_TESTE: Optional[int] = int(os.environ["MPS_TEST_GUILD_ID"]) if os.environ.get("MPS_TEST_GUILD_ID", "").isdigit() else None
 
-# Padrões de configuração (cada servidor pode sobrescrever tudo pelo /config).
+
 DEFAULT_CONFIG = {
-    "team_name": "",            # vazio = usa o nome do servidor
+    "team_name": "",            
     "color": "#3B82F6",
     "footer": "",
     "logo_url": "",
-    "tz_offset": "-3",          # fuso em horas (Brasília = -3)
+    "tz_offset": "-3",          
     "w_goal": "3",
     "w_assist": "2",
     "w_win": "3",
@@ -134,8 +119,7 @@ POSITION_ALIASES = {
     "CENTROAVANTE": "ATA", "PTD": "PD", "PTE": "PE", "SEG": "SA",
 }
 
-# Cada formação é uma lista de linhas (do goleiro até o ataque); cada linha
-# lista as posições "ideais" dos slots, da esquerda para a direita.
+
 FORMATIONS = {
     "4-3-3": [["GOL"], ["LE", "ZAG", "ZAG", "LD"], ["MC", "VOL", "MEI"], ["PE", "ATA", "PD"]],
     "4-4-2": [["GOL"], ["LE", "ZAG", "ZAG", "LD"], ["MC", "VOL", "MEI", "MC"], ["SA", "ATA"]],
@@ -143,7 +127,7 @@ FORMATIONS = {
     "5-3-2": [["GOL"], ["LE", "ZAG", "ZAG", "ZAG", "LD"], ["MC", "VOL", "MEI"], ["SA", "ATA"]],
 }
 
-# Conquistas: (código, emoji, nome, descrição, métrica, meta)
+
 ACHIEVEMENTS = [
     ("gol_1", "⚽", "Primeiro gol", "Marque o seu primeiro gol", "goals", 1),
     ("gol_10", "⚽", "10 gols", "Alcance 10 gols", "goals", 10),
@@ -164,9 +148,7 @@ ACHIEVEMENTS = [
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 log = logging.getLogger("mps")
 
-# ==============================
-# BANCO DE DADOS
-# ==============================
+
 
 _db_lock = threading.RLock()
 _conn: Optional[sqlite3.Connection] = None
@@ -381,7 +363,7 @@ def now_utc_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 
-# ----- configuração por servidor ------------------------------------------------
+
 
 def cfg_get(gid: int, key: str) -> str:
     row = db_one("SELECT value FROM config WHERE guild_id=? AND key=?", (gid, key))
@@ -421,9 +403,7 @@ def ensure_guild(guild: discord.Guild) -> None:
     )
 
 
-# ==============================
-# FUNÇÕES AUXILIARES
-# ==============================
+
 
 class UserError(Exception):
     """Erro 'esperado' (entrada inválida, falta de permissão etc.) mostrado ao usuário."""
@@ -571,7 +551,7 @@ def calc_winrate(wins: int, draws: int, games: int) -> float:
     return ((wins * 3 + draws) / (games * 3) * 100) if games else 0.0
 
 
-# ----- Embeds padronizados -------------------------------------------------------
+
 
 def accent_color(gid: Optional[int]) -> int:
     if gid is None:
@@ -606,7 +586,7 @@ def info_embed(gid: Optional[int], title: str, description: str = "") -> discord
     return make_embed(gid, title, description)
 
 
-# ----- Permissões ------------------------------------------------------------------
+
 
 def is_staff(user: Any) -> bool:
     """Administrador do servidor, dono, ou quem tem o cargo de administrador configurado."""
@@ -632,7 +612,7 @@ def require_staff(interaction: discord.Interaction) -> None:
         raise UserError("Apenas administradores do time podem fazer isso.", "Sem permissão")
 
 
-# ----- Respostas de interação ----------------------------------------------------
+
 
 _MISSING = discord.utils.MISSING
 
@@ -712,7 +692,7 @@ async def handle_error(interaction: discord.Interaction, error: BaseException) -
         pass
 
 
-# ----- Views/Modals base --------------------------------------------------------
+
 
 class SafeView(discord.ui.View):
     """View com verificação de dono, permissão de staff e tratamento de erros."""
@@ -892,7 +872,7 @@ def mention_list(user_ids: list, limit: int = 30) -> str:
     return text + (f" +{extra}" if extra > 0 else "")
 
 
-# ----- Cliente do bot ------------------------------------------------------------
+
 
 class MPSBot(discord.Client):
     def __init__(self) -> None:
@@ -901,7 +881,7 @@ class MPSBot(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self) -> None:
-        # Views persistentes (continuam funcionando depois de reiniciar o bot).
+       
         self.add_view(PresencaView())
         self.add_view(TimePanelView())
         try:
@@ -920,9 +900,7 @@ bot = MPSBot()
 tree = bot.tree
 
 
-# ==============================
-# LOGS
-# ==============================
+
 
 def unix_ts(created_at: Optional[str]) -> int:
     try:
@@ -987,9 +965,7 @@ def build_log_pages(gid: int, limit: int = 120) -> list:
     return pages
 
 
-# ==============================
-# SISTEMA DE JOGADORES
-# ==============================
+
 
 def get_player(gid: int, user_id: int):
     return db_one("SELECT * FROM players WHERE guild_id=? AND user_id=?", (gid, user_id))
@@ -1178,7 +1154,7 @@ class PlayerModal(SafeModal):
         await respond(interaction, embed=emb)
 
 
-# ----- Comandos /jogador --------------------------------------------------------------
+
 
 POSITION_CHOICES = [app_commands.Choice(name=f"{k} — {v}", value=k) for k, v in POSITION_NAMES.items()]
 STATUS_CHOICES = [app_commands.Choice(name=v.split(" ", 1)[1], value=k) for k, v in STATUS_LABELS.items()]
@@ -1259,9 +1235,7 @@ async def jogador_listar(interaction: discord.Interaction, status: Optional[app_
 tree.add_command(jogador_group)
 
 
-# ==============================
-# SISTEMA DE RANK
-# ==============================
+
 
 STATS_SQL = """
 SELECT p.id AS pid, p.name, p.rank_override,
@@ -1344,7 +1318,7 @@ def stats_row(gid: int, pid: int) -> dict:
     return d
 
 
-# ----- Conquistas ------------------------------------------------------------------------
+
 
 def get_metrics(gid: int, pid: int) -> dict:
     st = stats_row(gid, pid)
@@ -1404,7 +1378,7 @@ def describe_unlocks(unlocked: dict) -> str:
     return "\n".join(lines)
 
 
-# ----- Ranking (individual dos jogadores) ----------------------------------------------
+
 
 RANK_KINDS = {
     "geral": ("Geral (pontuação)", "score"),
@@ -1570,7 +1544,7 @@ async def _before_rank_loop():
     await bot.wait_until_ready()
 
 
-# ----- /gol e /assistencia (somente administração) -------------------------------------------
+
 
 LEDGER_TABLES = {"goals": "goals", "assists": "assists", "mvps": "mvps"}
 STAT_LABELS = {"goals": ("⚽", "Gols"), "assists": ("🅰️", "Assistências"), "mvps": ("🏅", "MVPs")}
@@ -1644,9 +1618,7 @@ async def cmd_assistencia(interaction: discord.Interaction, jogador: discord.Mem
     await respond(interaction, embed=manual_stat_embed(gid, player, "assists", amount, res), ephemeral=False)
 
 
-# ==============================
-# SISTEMA DE RESULTADOS
-# ==============================
+
 
 RESULT_LABELS = {"V": ("🏆 VITÓRIA", SUCCESS_COLOR, "Vitória", "✅"),
                  "E": ("🤝 EMPATE", WARN_COLOR, "Empate", "➖"),
@@ -1730,7 +1702,7 @@ def commit_result(gid: int, actor_id: int, d: ResultDraft, game_id: Optional[int
         if d.mvp:
             c.execute("INSERT INTO mvps (guild_id, player_id, match_id, amount, source, created_by, created_at) "
                       "VALUES (?,?,?,?,?,?,?)", (gid, d.mvp, mid, 1, "partida", actor_id, now))
-        # Integração com o calendário: marca o jogo agendado como disputado.
+       
         if game_id is None:
             g = c.execute("SELECT id FROM games WHERE guild_id=? AND status='scheduled' AND lower(opponent)=lower(?) "
                           "AND game_date<=? ORDER BY game_date DESC LIMIT 1", (gid, d.opponent, d.date_iso)).fetchone()
@@ -1806,7 +1778,7 @@ class ResultBuilder(SafeView):
         self.finished = False
         self.render()
 
-    # ----- helpers de estado -----
+   
     def players(self) -> list:
         return [p for p in (get_player_by_id(pid) for pid in self.d.participants) if p is not None]
 
@@ -1829,7 +1801,7 @@ class ResultBuilder(SafeView):
             parts.append(f"{p['name'] if p else pid} ×{n}")
         return trunc(", ".join(parts), 1000)
 
-    # ----- embed -----
+   
     def embed(self) -> discord.Embed:
         d, gid = self.d, self.gid
         label, color, _, _ = RESULT_LABELS[d.result]
@@ -1854,7 +1826,7 @@ class ResultBuilder(SafeView):
         emb.add_field(name="➡️ Próximo passo", value=hints[self.stage], inline=False)
         return emb
 
-    # ----- componentes -----
+  
     def render(self) -> None:
         self.clear_items()
         stage = self.stage
@@ -1932,7 +1904,7 @@ class ResultBuilder(SafeView):
             add_button(self, "Sem MVP", self._no_mvp, emoji="🚫", row=1)
             add_button(self, "Voltar", self._back, emoji="⬅️", row=1)
             add_button(self, "Próximo", self._next, emoji="➡️", style=discord.ButtonStyle.primary, row=1)
-        else:  # revisão
+        else:  
             add_button(self, "Confirmar e registrar", self._confirm, emoji="✅", style=discord.ButtonStyle.success, row=0)
             add_button(self, "Voltar", self._back, emoji="⬅️", row=0)
         add_button(self, "Cancelar", self._cancel, emoji="✖️", style=discord.ButtonStyle.danger,
@@ -1942,7 +1914,7 @@ class ResultBuilder(SafeView):
         self.render()
         await interaction.response.edit_message(embed=self.embed(), view=self)
 
-    # ----- ações -----
+    
     async def _use_lineup(self, interaction: discord.Interaction):
         ids = lineup_player_ids(self.gid)
         if not ids:
@@ -2129,7 +2101,7 @@ class ResultStartModal(SafeModal):
         await start_result_flow(interaction, self.f_opp.value, our, their, data, horario, self.f_comp.value)
 
 
-# ----- Histórico de resultados ------------------------------------------------------------
+
 
 def match_block(m, compact: bool = False) -> str:
     _, _, res_name, emoji = RESULT_LABELS[m["result"]]
@@ -2164,9 +2136,7 @@ async def cmd_historico(interaction: discord.Interaction):
     await send_paged(interaction, build_history_pages(interaction.guild_id))
 
 
-# ==============================
-# CALENDÁRIO
-# ==============================
+
 
 def get_game(gid: int, game_id: int):
     return db_one("SELECT * FROM games WHERE id=? AND guild_id=?", (game_id, gid))
@@ -2408,9 +2378,7 @@ async def jogo_listar(interaction: discord.Interaction):
 tree.add_command(jogo_group)
 
 
-# ==============================
-# ESCALAÇÃO
-# ==============================
+
 
 MAX_LINEUP = 18
 
@@ -2530,7 +2498,7 @@ def render_lineup_image(team: str, formation: str, slots: list, bench: list, sho
     W, H = 1000, 1400
     img = Image.new("RGB", (W, H), (15, 23, 42))
     d = ImageDraw.Draw(img)
-    # Cabeçalho
+    
     d.rectangle([0, 0, W, 150], fill=(17, 24, 39))
     d.rectangle([0, 146, W, 152], fill=(212, 175, 55))
     t, f = _fit_text(d, team.upper(), 600, 62)
@@ -2538,7 +2506,7 @@ def render_lineup_image(team: str, formation: str, slots: list, bench: list, sho
     d.text((50, 112), f"ESCALAÇÃO  •  {date_text}", font=_font(26, False), fill=(212, 175, 55), anchor="lm")
     d.text((950, 62), formation, font=_font(70), fill=(255, 255, 255), anchor="rm")
     d.text((950, 112), "FORMAÇÃO", font=_font(24, False), fill=(148, 163, 184), anchor="rm")
-    # Campo
+    
     px0, py0, px1, py1 = 50, 185, 950, 1235
     bands = 14
     bh = (py1 - py0) / bands
@@ -2559,7 +2527,7 @@ def render_lineup_image(team: str, formation: str, slots: list, bench: list, sho
     d.rectangle([cx - 105, py0, cx + 105, py0 + 70], outline=white, width=4)
     d.arc([cx - 100, py0 + 130 - 100, cx + 100, py0 + 130 + 100], 38, 142, fill=white, width=4)
     d.ellipse([cx - 6, py0 + 130 - 6, cx + 6, py0 + 130 + 6], fill=white)
-    # Jogadores
+    
     n_lines = len(FORMATIONS[formation])
     y_bot, y_top = py1 - 125, py0 + 150
     size = 112
@@ -2582,13 +2550,13 @@ def render_lineup_image(team: str, formation: str, slots: list, bench: list, sho
             d.ellipse([x - size // 2, y - size // 2, x + size // 2, y + size // 2], fill=(30, 41, 59))
             d.text((x, y), str(e["number"]) if show_numbers else e["name"][:1].upper(), font=_font(52),
                    fill=(255, 255, 255), anchor="mm")
-        # etiqueta de posição
+        
         tag_w = int(d.textlength(e["position"], font=_font(22))) + 22
         d.rounded_rectangle([x - size // 2 - 10, y - size // 2 - 14, x - size // 2 - 10 + tag_w, y - size // 2 + 16],
                             radius=10, fill=(17, 24, 39), outline=(255, 255, 255), width=2)
         d.text((x - size // 2 - 10 + tag_w / 2, y - size // 2 + 1), e["position"], font=_font(22),
                fill=(255, 255, 255), anchor="mm")
-        # número da camisa
+        
         if show_numbers:
             bx, by = x + size // 2 - 4, y + size // 2 - 8
             d.ellipse([bx - 24, by - 24, bx + 24, by + 24], fill=(212, 175, 55), outline=(17, 24, 39), width=3)
@@ -2599,7 +2567,7 @@ def render_lineup_image(team: str, formation: str, slots: list, bench: list, sho
         ny = y + size // 2 + 28
         d.rounded_rectangle([x - tw / 2, ny - 18, x + tw / 2, ny + 18], radius=16, fill=(17, 24, 39))
         d.text((x, ny), name, font=nf, fill=(255, 255, 255), anchor="mm")
-    # Rodapé: reservas
+    
     d.rectangle([0, 1262, W, H], fill=(17, 24, 39))
     d.rectangle([0, 1262, W, 1266], fill=(212, 175, 55))
     d.text((50, 1296), "RESERVAS", font=_font(26), fill=(212, 175, 55), anchor="lm")
@@ -2826,9 +2794,7 @@ async def cmd_escalacao(interaction: discord.Interaction, formacao: Optional[app
     await send_lineup(interaction, formacao.value if formacao else None)
 
 
-# ==============================
-# PRESENÇA
-# ==============================
+
 
 PRESENCE_FIELD_NAME = "📋 Confirmação de presença"
 
@@ -2932,7 +2898,7 @@ class PresencaView(discord.ui.View):
     @discord.ui.button(label="Encerrar", emoji="🔒", style=discord.ButtonStyle.secondary,
                        custom_id="mps:pres:fechar", row=0)
     async def btn_fechar(self, interaction: discord.Interaction, button: discord.ui.Button):
-        require_staff(interaction)  # permissão verificada no backend
+        require_staff(interaction)  
         gid = interaction.guild_id
         ev = self._event(interaction)
         if not ev["is_open"]:
@@ -3012,9 +2978,7 @@ async def post_game_announcement(guild: discord.Guild, channel: discord.abc.Mess
     return msg
 
 
-# ==============================
-# /SAY
-# ==============================
+
 
 SAY_TEMPLATES = {
     "aviso": ("📢 Aviso normal", "📢 AVISO", 0x3B82F6),
@@ -3375,9 +3339,7 @@ async def cmd_say(interaction: discord.Interaction):
     view.bind(interaction)
 
 
-# ==============================
-# /PERFIL
-# ==============================
+
 
 def profile_embed(gid: int, player, avatar_url: str) -> discord.Embed:
     st = stats_row(gid, player["id"])
@@ -3533,9 +3495,7 @@ async def cmd_perfil(interaction: discord.Interaction, usuario: Optional[discord
     view.bind(interaction)
 
 
-# ==============================
-# /TIME
-# ==============================
+
 
 def team_stats(gid: int) -> dict:
     ms = db_all("SELECT * FROM matches WHERE guild_id=? ORDER BY played_date, id", (gid,))
@@ -3654,9 +3614,7 @@ async def cmd_time(interaction: discord.Interaction):
     await respond(interaction, embed=team_panel_embed(interaction.guild_id), view=TimePanelView(), ephemeral=False)
 
 
-# ==============================
-# /AJUDA
-# ==============================
+
 
 HELP_PAGES = {
     "jogadores": ("👤", "Jogadores", [
@@ -3720,9 +3678,7 @@ async def cmd_ajuda(interaction: discord.Interaction):
     view.bind(interaction)
 
 
-# ==============================
-# PAINEL ADMIN
-# ==============================
+
 
 async def pick_user(interaction: discord.Interaction, title: str, callback, placeholder: str = "Selecione o jogador") -> None:
     view = UserPickView(interaction.user.id, callback, placeholder=placeholder)
@@ -4135,9 +4091,7 @@ async def cmd_admin(interaction: discord.Interaction):
     view.bind(interaction)
 
 
-# ==============================
-# CONFIGURAÇÕES (/config)
-# ==============================
+
 
 CONFIG_SECTIONS = [("canais", "Canais", "📺"), ("cargos", "Cargos", "👥"), ("pesos", "Pesos do Rank", "⚖️"),
                    ("ranks", "Valores dos Ranks", "🏅"), ("escalacao", "Escalação", "📋"),
@@ -4513,9 +4467,7 @@ async def cmd_config(interaction: discord.Interaction):
     view.bind(interaction)
 
 
-# ==============================
-# EVENTOS
-# ==============================
+
 
 @tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -4550,9 +4502,7 @@ async def on_guild_update(before: discord.Guild, after: discord.Guild):
         ensure_guild(after)
 
 
-# ==============================
-# INICIALIZAÇÃO
-# ==============================
+
 
 def main() -> None:
     if not TOKEN or TOKEN.upper().startswith("COLE_"):
