@@ -1,114 +1,90 @@
-# MPS Team Manager
+# TCS/MPS Team Manager
 
-Bot de Discord em Python (`discord.py` 2.x) para gerenciar um time de **MPS** (futebol no Roblox): elenco, partidas, estatísticas, Rank individual, calendário, presença, escalação em imagem e anúncios. Todo o código está em um único arquivo (`main.py`) e os dados ficam em SQLite.
+Olá, pessoal! Aqui quem fala é o dev (único) do **Team OS**.
 
-## Recursos
+Bom, esse bot foi programado inteiramente por mim, com uma pequena ajuda de IA. Mas calma, eu utilizei IA principalmente para **corrigir falhas, encontrar problemas e melhorar algumas partes do código**.
 
-- **Rank individual (D, C, B, A, S)** calculado por gols, assistências, vitórias e MVPs, com pesos e faixas configuráveis. Atualização automática a cada 60 minutos.
-- **Perfil do jogador** com botões de Estatísticas, Histórico e Conquistas.
-- **Resultados guiados** (`/result`): selecione quem jogou, gols, assistências e MVP por menus, sem digitar nada.
-- **Histórico, calendário e painel do time** (`/historico`, `/calendario`, `/time`).
-- **Confirmação de presença** (Vou / Não vou / Talvez), persistente após reiniciar o bot.
-- **Escalação em imagem** com campo, avatares, nomes, posições e formações 4-3-3, 4-4-2, 3-5-2 e 5-3-2.
-- **`/say`**: anúncios com embeds, imagens, banner, botões de link e modelos (aviso, jogo, calendário, convocação, resultado, comunicado).
-- **Painel administrativo** (`/admin`) e **configurações por servidor** (`/config`).
-- **Logs** de toda alteração, com valores anteriores e novos.
-- **Conquistas** (primeiro gol, 10 gols, hat-trick, 5 vitórias seguidas e outras).
+Então não, você não vai estar usando um bot que simplesmente foi feito por uma IA e jogado aqui KKKKKKKKKKKKKKKK.
 
-## Requisitos
+Enfim, a partir de agora vou mostrar, passo a passo, tudo o que você precisa saber sobre o **Team OS**, incluindo instalação, configuração, comandos e algumas ajudas para utilizar o bot.
 
-- Python 3.9 ou superior
-- Um bot criado no [Discord Developer Portal](https://discord.com/developers/applications)
+## 1. Instalação
 
-## Instalação
+O **Team OS é Open Source**, então você pode acessar e analisar o código do projeto.
 
-```bash
-git clone https://github.com/Deltinhalol/Team-OS
-cd Team-OS
-pip install -r requirements.txt
-```
+Porém, se você puder utilizar o bot normalmente, eu agradeço. Além de facilitar bastante, isso também vai poupar seu tempo.
 
-## Configurando o token
+O bot precisa estar hospedado em algum lugar para funcionar. Então, caso você não tenha conhecimento para instalar e hospedar o projeto no seu próprio PC ou celular, recomendo simplesmente utilizar a versão do bot já disponível.
 
-O token **não fica no código**. Escolha uma das opções:
+Mas, caso você saiba como instalar e hospedar o projeto por conta própria, fique à vontade.
 
-**Opção 1 — arquivo `.env`** (recomendado):
+> **Resumindo:** você pode instalar por conta própria, mas se puder utilizar o bot normalmente, vai ser muito mais simples.
 
-```bash
-nano .env
-# edite o .env e coloque o token em DISCORD_TOKEN=
-```
+## 2. Configuração
 
-**Opção 2 — variável de ambiente:**
+Depois de adicionar o bot ao servidor, existem alguns passos importantes para deixar tudo funcionando corretamente.
 
-```bash
-# Linux / macOS
-export DISCORD_TOKEN="seu_token"
+### Primeiros passos
 
-# Windows (PowerShell)
-$env:DISCORD_TOKEN="seu_token"
-```
+**1. `/config`**
 
-Se o seu sistema não deixar criar arquivos que começam com ponto, use um arquivo chamado `env.txt` com o mesmo conteúdo. O `.env` e o banco `*.db` já estão no `.gitignore`. **Nunca** publique seu token. Se ele vazar, gere outro em *Bot → Reset Token*.
+Configure os principais canais e o cargo de jogador:
 
-Variáveis opcionais:
+* Canal de logs
+* Canal de resultados
+* Canal do calendário
+* Canal do ranking
+* Cargo de jogador
 
-| Variável | Para que serve |
-|---|---|
-| `MPS_TEST_GUILD_ID` | ID de um servidor para os comandos aparecerem na hora durante os testes |
-| `MPS_DB_PATH` | Caminho do arquivo SQLite (padrão: `mps_team.db`) |
+**2. `/jogador adicionar`**
 
-## Executando
+Cadastre os jogadores que fazem parte do elenco.
 
-```bash
-python main.py
-```
+**3. `/jogo adicionar`**
 
-O banco é criado automaticamente e os comandos slash são registrados na inicialização.
+Agende uma partida e publique o aviso para os jogadores confirmarem presença.
 
-## Adicionando o bot ao servidor
+**4. `/escalar` e `/escalação`**
 
-No Developer Portal, em **OAuth2 → URL Generator**:
+Monte a escalação da partida e gere a imagem da escalação.
 
-- Escopos: `bot` e `applications.commands`
-- Permissões: Ver canais, Enviar mensagens, Inserir links, Anexar arquivos, Ler histórico de mensagens e Usar comandos de aplicativo (mais *Mencionar @everyone* se for usar essa opção no `/say`)
+**5. `/result`**
 
-Não é necessário ativar nenhuma intent privilegiada.
+Registre o resultado da partida.
 
-## Comandos
+Ao registrar o resultado, informações como **ranking, conquistas e histórico** são atualizadas automaticamente.
 
-| Área | Comandos |
-|---|---|
-| Todos | `/perfil`, `/ranking`, `/historico`, `/calendario`, `/time`, `/ajuda`, `/escalação`, `/jogador listar` |
-| Administração | `/jogador adicionar\|editar\|remover`, `/gol`, `/assistencia`, `/result`, `/jogo adicionar\|editar\|remover\|listar`, `/escalar`, `/say`, `/admin`, `/config` |
+## 3. Comandos
 
-Administradores são quem tem a permissão *Administrador*, o dono do servidor ou quem tem o cargo definido em `/config`. As permissões são verificadas no backend, não apenas nos botões.
+### Comandos gerais
 
-## Primeiros passos
+| Área          | Comandos                                                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Todos         | `/perfil` · `/ranking` · `/historico` · `/calendario` · `/time` · `/ajuda` · `/escalação` · `/jogador listar`                                                                                                            |
+| Administração | `/jogador adicionar` · `/jogador editar` · `/jogador remover` · `/gol` · `/assistencia` · `/result` · `/jogo adicionar` · `/jogo editar` · `/jogo remover` · `/jogo listar` · `/escalar` · `/say` · `/admin` · `/config` |
 
-1. `/config`: defina canais (logs, resultados, calendário, ranking) e o cargo de jogador.
-2. `/jogador adicionar`: cadastre o elenco.
-3. `/jogo adicionar`: agende uma partida e publique o aviso com presença.
-4. `/escalar` e `/escalação`: monte e gere a imagem da escalação.
-5. `/result`: registre o resultado; Rank, conquistas e histórico são atualizados.
+### Permissões
 
-## Como o Rank funciona
+Os comandos administrativos podem ser utilizados por:
 
-```
-Pontuação = gols × peso_gols + assistências × peso_assist + vitórias × peso_vitórias + MVPs × peso_mvp
-```
+* Usuários com a permissão **Administrador**
+* Dono do servidor
+* Usuários com o cargo administrativo definido através do `/config`
 
-Padrões: pesos 3 / 2 / 3 / 10. Faixas mínimas: D 0, C 50, B 120, A 250, S 450. Tudo editável em `/config`. As estatísticas são derivadas de um histórico que só cresce (gols, assistências e MVPs), e ajustes manuais ficam registrados nos logs.
+As permissões são verificadas **diretamente no backend**, e não apenas através dos botões ou da interface do bot.
 
-## Dados e backup
+Isso significa que mesmo que alguém consiga visualizar ou tentar utilizar uma função, o sistema ainda verifica se o usuário realmente possui permissão para executá-la.
 
-Tudo fica em `mps_team.db` (SQLite). Faça cópias desse arquivo de vez em quando. Remover um jogador apenas o marca como inativo, então o histórico é preservado.
+## 4. Ajuda
 
-## Estrutura
+Caso tenha alguma dúvida sobre algum comando ou sistema do Team OS, utilize:
 
-```
-main.py            # bot completo (banco, comandos, painéis, imagens)
-requirements.txt
-.env.example
-.gitignore
-```
+`/ajuda`
+
+O objetivo é deixar o bot o mais simples possível de configurar e utilizar, mesmo para quem nunca mexeu com um sistema desse tipo antes.
+
+## ⚽ Team OS
+
+Um sistema feito para facilitar a organização de times de **TCS/MPS**, centralizando jogadores, partidas, escalações, resultados e estatísticas em um único lugar.
+
+**Organize seu time. Gerencie suas partidas. Jogue.**
