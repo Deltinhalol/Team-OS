@@ -23,8 +23,8 @@ Bot de Discord em Python (`discord.py` 2.x) para gerenciar um time de **MPS** (f
 ## Instalação
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-cd SEU_REPOSITORIO
+git clone https://github.com/Deltinhalol/Team-OS
+cd Team-OS
 pip install -r requirements.txt
 ```
 
@@ -35,7 +35,7 @@ O token **não fica no código**. Escolha uma das opções:
 **Opção 1 — arquivo `.env`** (recomendado):
 
 ```bash
-cp .env.example .env
+nano .env
 # edite o .env e coloque o token em DISCORD_TOKEN=
 ```
 
